@@ -211,6 +211,7 @@ body {
     padding: 8px 15px;
     cursor: pointer;
     transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
 }
 
 .word-btn.selected {
@@ -224,6 +225,7 @@ body {
     border-radius: 5px;
     border: 1px solid #ccc;
     font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
 }
 
 .check-btn {
@@ -247,24 +249,27 @@ body {
     padding: 15px;
     border-radius: 10px;
     margin-top: 15px;
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .correct {
     color: #10C894;
     font-family: 'Cooper Black', serif;
     font-size: 1.5rem;
+    margin-bottom: 10px;
 }
 
 .incorrect {
     color: #C8102E;
     font-family: 'Cooper Black', serif;
     font-size: 1.5rem;
+    margin-bottom: 10px;
 }
 
 #correct-answer {
     color: white;
-    font-size: 1.2rem;
-    margin-top: 10px;
+    font-size: 1.1rem;
+    line-height: 1.4;
 }
 
 .small-mascote {
@@ -292,6 +297,7 @@ body {
     font-size: 1rem;
     cursor: pointer;
     transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
 }
 
 .next-btn {
@@ -390,6 +396,15 @@ body {
     .video-container {
         width: 90%;
     }
+    
+    .word-choices {
+        gap: 8px;
+    }
+    
+    .word-btn {
+        padding: 6px 12px;
+        font-size: 0.9rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -419,6 +434,11 @@ body {
     
     .word-btn {
         padding: 5px 10px;
-        font-size: 0.9rem;
+        font-size: 0.8rem;
+    }
+    
+    .difficulty-buttons {
+        flex-direction: column;
+        gap: 10px;
     }
 }
