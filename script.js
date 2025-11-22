@@ -1,4 +1,4 @@
-// Dados do quiz com todas as traduções possíveis atualizadas
+// Dados do quiz com 30 exercícios completos
 const quizData = [
     {
         id: 1,
@@ -13,7 +13,7 @@ const quizData = [
             "A panificadora está no canto da rua.",
             "A panificadora está na esquina da rua."
         ],
-        alternatives: ["L'ÉCOLE", "VAS", "JE"]
+        alternatives: ["l'école", "vas", "je"]
     },
     {
         id: 2,
@@ -26,7 +26,7 @@ const quizData = [
             "Eu como pão todas as manhãs na panificadora.",
             "Todas as manhãs, eu como pão na panificadora."
         ],
-        alternatives: ["À", "LA POSTE", "VAIS"]
+        alternatives: ["à", "la poste", "vais"]
     },
     {
         id: 3,
@@ -41,9 +41,8 @@ const quizData = [
             "O mercado está longe daqui.",
             "O mercado é longe daqui."
         ],
-        alternatives: ["TOUS LES JOURS", "PRÈS", "ICI"]
+        alternatives: ["tous les jours", "près", "ici"]
     },
-    // Continue com os outros 27 exercícios seguindo o mesmo padrão...
     {
         id: 4,
         french: "Dimanche, la banque est fermée dans la ville.",
@@ -54,7 +53,7 @@ const quizData = [
             "No domingo, o banco é fechado na cidade.",
             "No domingo, o banco fica fechado na cidade."
         ],
-        alternatives: ["LUNDI", "OUVERT", "PETITE"]
+        alternatives: ["lundi", "ouvert", "petite"]
     },
     {
         id: 5,
@@ -66,9 +65,298 @@ const quizData = [
             "Ela procura a estação do bairro.",
             "Ela busca a estação do bairro."
         ],
-        alternatives: ["IL", "TROUVE", "GRAND"]
+        alternatives: ["il", "trouve", "grand"]
     },
-    // Adicione mais exercícios até completar 30...
+    {
+        id: 6,
+        french: "Ma maison est près de l'école.",
+        audio: "Ma maison est près de l'école..mp3",
+        images: ["MAISON.jpg", "PRÈS.jpg", "ÉCOLE.jpg"],
+        correctAnswers: [
+            "Minha casa fica perto da escola.",
+            "Minha casa está perto da escola.",
+            "Minha casa é perto da escola."
+        ],
+        alternatives: ["ton", "loin", "jardin"]
+    },
+    {
+        id: 7,
+        french: "Tu habites dans un quartier calme.",
+        audio: "Tu habites dans un quartier calme..mp3",
+        images: ["TU.jpg", "HABITER.jpg", "DANS.jpg", "QUARTIER.jpg", "CALME.jpg"],
+        correctAnswers: [
+            "Você mora em um bairro tranquilo.",
+            "Você mora em um bairro calmo.",
+            "Você mora em um bairro sossegado."
+        ],
+        alternatives: ["je", "bruyant", "ville"]
+    },
+    {
+        id: 8,
+        french: "Le restaurant est à côté de la poste.",
+        audio: "Le restaurant est à côté de la poste..mp3",
+        images: ["RESTAURANT.jpg", "À CÔTÉ.jpg", "POSTE.jpg"],
+        correctAnswers: [
+            "O restaurante fica ao lado dos correios.",
+            "O restaurante está ao lado dos correios.",
+            "O restaurante é ao lado do correio.",
+            "O restaurante é ao lado dos correios.",
+            "O restaurante está ao lado do correio.",
+            "O restaurante fica ao lado do correio."
+        ],
+        alternatives: ["loin", "devant", "banque"]
+    },
+    {
+        id: 9,
+        french: "Elle va manger tous les jours au restaurant.",
+        audio: "Elle va manger tous les jours au restaurant..mp3",
+        images: ["ELLE.jpg", "MANGER.jpg", "TOUS LES JOURS.jpg", "RESTAURANT.jpg"],
+        correctAnswers: [
+            "Ela vai comer no restaurante todos os dias.",
+            "Ela vai comer todos os dias no restaurante."
+        ],
+        alternatives: ["il", "parfois", "maison"]
+    },
+    {
+        id: 10,
+        french: "Le cinéma est à côté de la place, mais loin d'ici.",
+        audio: "Le cinéma est à côté de la place, mais loin d'ici..mp3",
+        images: ["CINÉMA.jpg", "À CÔTÉ.jpg", "PLACE.jpg", "LOIN.jpg", "D'ICI.jpg"],
+        correctAnswers: [
+            "O cinema fica ao lado da praça, mas longe daqui.",
+            "O cinema está ao lado da praça, mas longe daqui.",
+            "O cinema é ao lado da praça, mas longe daqui."
+        ],
+        alternatives: ["près", "petite", "école"]
+    },
+    {
+        id: 11,
+        french: "Tous les soirs, je passe devant la pâtisserie.",
+        audio: "Tous les soirs, je passe devant la pâtisserie..mp3",
+        images: ["SOIR.jpg", "DEVANT.jpg", "PÂTISSERIE.jpg"],
+        correctAnswers: [
+            "Todas as noites, eu passo em frente à confeitaria.",
+            "Todas as noites, eu passo na frente da confeitaria."
+        ],
+        alternatives: ["matins", "derrière", "boulangerie"]
+    },
+    {
+        id: 12,
+        french: "La salle de sport est dans ma rue.",
+        audio: "La salle de sport est dans ma rue..mp3",
+        images: ["SALLE DE SPORT.jpg", "DANS.jpg", "RUE.jpg"],
+        correctAnswers: [
+            "A academia fica na minha rua.",
+            "A academia é na minha rua."
+        ],
+        alternatives: ["ton", "avenue", "loin"]
+    },
+    {
+        id: 13,
+        french: "Nous cherchons la pharmacie.",
+        audio: "Nous cherchons la pharmacie..mp3",
+        images: ["NOUS.jpg", "CHERCHER.jpg", "PHARMACIE.jpg"],
+        correctAnswers: [
+            "Nós estamos procurando a farmácia.",
+            "Nós procuramos a farmácia.",
+            "Nós buscamos a farmácia."
+        ],
+        alternatives: ["je", "trouvons", "hôpital"]
+    },
+    {
+        id: 14,
+        french: "Le musée est loin d'ici.",
+        audio: "Le musée est loin d'ici..mp3",
+        images: ["MUSÉE.jpg", "LOIN.jpg", "D'ICI.jpg"],
+        correctAnswers: [
+            "O museu fica longe daqui.",
+            "O museu está longe daqui.",
+            "O museu é longe daqui."
+        ],
+        alternatives: ["près", "bibliothèque", "grand"]
+    },
+    {
+        id: 15,
+        french: "La mairie est au centre de la ville.",
+        audio: "La mairie est au centre de la ville..mp3",
+        images: ["MAIRIE.jpg", "CENTRE.jpg", "VILLE.jpg"],
+        correctAnswers: [
+            "A prefeitura fica no centro da cidade.",
+            "A prefeitura está no centro da cidade.",
+            "A prefeitura é no centro da cidade."
+        ],
+        alternatives: ["banlieue", "petite", "école"]
+    },
+    {
+        id: 16,
+        french: "L'école est proche d'ici.",
+        audio: "L'école est proche d'ici..mp3",
+        images: ["ÉCOLE.jpg", "PROCHE.jpg", "D'ICI.jpg"],
+        correctAnswers: [
+            "A escola fica próxima daqui.",
+            "A escola está próxima daqui.",
+            "A escola é próxima daqui."
+        ],
+        alternatives: ["loin", "grande", "université"]
+    },
+    {
+        id: 17,
+        french: "Le cimetière est très calme et loin du centre.",
+        audio: "Le cimetière est très calme et loin du centre..mp3",
+        images: ["CIMETIÈRE.jpg", "CALME.jpg", "LOIN.jpg", "CENTRE.jpg"],
+        correctAnswers: [
+            "O cemitério é muito tranquilo e longe do centro.",
+            "O cemitério é muito calmo e longe do centro."
+        ],
+        alternatives: ["près", "bruyant", "petit"]
+    },
+    {
+        id: 18,
+        french: "Elle va déjeuner devant l'hôpital.",
+        audio: "Elle va déjeuner devant l'hôpital..mp3",
+        images: ["ELLE.jpg", "DÉJEUNER.jpg", "DEVANT.jpg", "HÔPITAL.jpg"],
+        correctAnswers: [
+            "Ela vai almoçar em frente ao hospital.",
+            "Ela vai almoçar na frente do hospital."
+        ],
+        alternatives: ["il", "dîner", "derrière"]
+    },
+    {
+        id: 19,
+        french: "La pâtisserie est fermée le dimanche.",
+        audio: "La pâtisserie est fermée le dimanche..mp3",
+        images: ["PÂTISSERIE.jpg", "FERMER.jpg", "DIMANCHE.jpg"],
+        correctAnswers: [
+            "A confeitaria está fechada no domingo.",
+            "A confeitaria fica fechada no domingo.",
+            "A confeitaria é fechada no domingo."
+        ],
+        alternatives: ["lundi", "ouverte", "boulangerie"]
+    },
+    {
+        id: 20,
+        french: "Il y a un joli magasin dans ton quartier.",
+        audio: "Il y a un joli magasin dans ton quartier..mp3",
+        images: ["JOLIE.jpg", "MAGASIN.jpg", "DANS.jpg", "QUARTIER.jpg"],
+        correctAnswers: [
+            "Há uma loja linda no seu bairro.",
+            "Há uma loja linda no teu bairro.",
+            "Há uma linda loja no seu bairro.",
+            "Há uma linda loja no teu bairro.",
+            "Tem uma loja linda no seu bairro.",
+            "Tem uma loja linda no teu bairro.",
+            "Tem uma linda loja no seu bairro.",
+            "Tem uma linda loja no teu bairro."
+        ],
+        alternatives: ["elle", "laid", "ville"]
+    },
+    {
+        id: 21,
+        french: "Nous allons manger au parc le soir.",
+        audio: "Nous allons manger au parc le soir..mp3",
+        images: ["NOUS.jpg", "MANGER.jpg", "PARC.jpg", "SOIR.jpg"],
+        correctAnswers: [
+            "Nós vamos comer no parque à noite.",
+            "Nós vamos comer no parque de noite."
+        ],
+        alternatives: ["je", "matin", "jardin"]
+    },
+    {
+        id: 22,
+        french: "La gare est loin d'ici.",
+        audio: "La gare est loin d'ici..mp3",
+        images: ["GARE.jpg", "LOIN.jpg", "D'ICI.jpg"],
+        correctAnswers: [
+            "A estação fica longe daqui.",
+            "A estação está longe daqui.",
+            "A estação é longe daqui."
+        ],
+        alternatives: ["près", "aéroport", "grande"]
+    },
+    {
+        id: 23,
+        french: "Le magasin est près du cinéma.",
+        audio: "Le magasin est près du cinéma..mp3",
+        images: ["MAGASIN.jpg", "PRÈS.jpg", "CINÉMA.jpg"],
+        correctAnswers: [
+            "A loja fica perto do cinema.",
+            "A loja está perto do cinema.",
+            "A loja é perto do cinema."
+        ],
+        alternatives: ["loin", "théâtre", "petite"]
+    },
+    {
+        id: 24,
+        french: "Tous les jours, je vais à la poste.",
+        audio: "Tous les jours, je vais à la poste..mp3",
+        images: ["TOUS LES JOURS.jpg", "POSTE.jpg"],
+        correctAnswers: [
+            "Todos os dias, eu vou aos correios.",
+            "Todos os dias, eu vou ao correio."
+        ],
+        alternatives: ["parfois", "banque", "école"]
+    },
+    {
+        id: 25,
+        french: "La boulangerie de mon quartier est fermée le dimanche.",
+        audio: "La boulangerie de mon quartier est fermée le dimanche..mp3",
+        images: ["BOULANGERIE.jpg", "QUARTIER.jpg", "FERMER.jpg", "DIMANCHE.jpg"],
+        correctAnswers: [
+            "A padaria do meu bairro está fechada no domingo.",
+            "A padaria do meu bairro fica fechada no domingo.",
+            "A padaria do meu bairro é fechada aos domingos.",
+            "A padaria do meu bairro é fechada no domingo.",
+            "A padaria do meu bairro fica fechada aos domingos."
+        ],
+        alternatives: ["ton", "ouverte", "lundi"]
+    },
+    {
+        id: 26,
+        french: "La bibliothèque est à côté de la mairie.",
+        audio: "La bibliothèque est à côté de la mairie..mp3",
+        images: ["BIBLIOTHÈQUE.jpg", "À CÔTÉ.jpg", "MAIRIE.jpg"],
+        correctAnswers: [
+            "A biblioteca fica ao lado da prefeitura.",
+            "A biblioteca está ao lado da prefeitura.",
+            "A biblioteca é ao lado da prefeitura."
+        ],
+        alternatives: ["loin", "école", "musée"]
+    },
+    {
+        id: 27,
+        french: "Le petit magasin du coin est joli.",
+        audio: "Le petit magasin du coin est joli..mp3",
+        images: ["PETIT.jpg", "MAGASIN.jpg", "COIN.jpg", "JOLIE.jpg"],
+        correctAnswers: [
+            "A lojinha da esquina é linda.",
+            "A pequena loja da esquina é linda.",
+            "A lojinha do canto é linda.",
+            "A pequena loja do canto é linda."
+        ],
+        alternatives: ["grand", "laid", "rue"]
+    },
+    {
+        id: 28,
+        french: "Je vais manger à la boulangerie cette semaine.",
+        audio: "Je vais manger à la boulangerie cette semaine..mp3",
+        images: ["MANGER.jpg", "BOULANGERIE.jpg", "SEMAINE.jpg"],
+        correctAnswers: [
+            "Eu vou comer na padaria esta semana.",
+            "Vou comer na padaria esta semana."
+        ],
+        alternatives: ["il", "mois", "restaurant"]
+    },
+    {
+        id: 29,
+        french: "Nous déjeunons tous les jours près de l'école.",
+        audio: "Nous déjeunons tous les jours près de l'école..mp3",
+        images: ["NOUS.jpg", "DÉJEUNER.jpg", "TOUS LES JOURS.jpg", "PRÈS.jpg", "ÉCOLE.jpg"],
+        correctAnswers: [
+            "Nós almoçamos todos os dias perto da escola.",
+            "Almoçamos todos os dias perto da escola."
+        ],
+        alternatives: ["je", "loin", "maison"]
+    },
     {
         id: 30,
         french: "Ma maison est à côté du parc.",
@@ -79,7 +367,7 @@ const quizData = [
             "Minha casa está do lado do parque.",
             "Minha casa é do lado do parque."
         ],
-        alternatives: ["TON", "LOIN", "JARDIN"]
+        alternatives: ["ton", "loin", "jardin"]
     }
 ];
 
@@ -129,7 +417,8 @@ const resultImage = document.getElementById('result-image');
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', () => {
-    loadProgress();
+    // Resetar estado ao iniciar
+    resetState();
     setupEventListeners();
     
     // Transição automática da página inicial
@@ -139,6 +428,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 500);
     });
 });
+
+// Resetar estado da aplicação
+function resetState() {
+    state = {
+        currentPage: 'intro-page',
+        currentQuestion: 0,
+        score: 0,
+        userAnswers: [],
+        difficulty: 'easy',
+        audioPlaybackRate: 1,
+        selectedWords: [],
+        answeredQuestions: new Set()
+    };
+    localStorage.removeItem('frenchQuizProgress');
+}
 
 // Configurar event listeners
 function setupEventListeners() {
@@ -173,6 +477,13 @@ function setupEventListeners() {
         playSound('BUTTON.mp3');
         goToNextQuestion();
     });
+
+    // Permitir digitação no modo difícil
+    answerInput.addEventListener('focus', () => {
+        if (state.answeredQuestions.has(state.currentQuestion)) {
+            answerInput.blur();
+        }
+    });
 }
 
 // Mostrar página específica
@@ -186,6 +497,12 @@ function showPage(pageId) {
 
 // Iniciar quiz
 function startQuiz() {
+    // Resetar para primeira questão
+    state.currentQuestion = 0;
+    state.score = 0;
+    state.answeredQuestions.clear();
+    state.selectedWords = [];
+    
     showPage('quiz-page');
     updateModeIndicator();
     loadQuestion();
@@ -215,6 +532,9 @@ function loadQuestion() {
         const imgElement = document.createElement('img');
         imgElement.src = img;
         imgElement.alt = img.replace('.jpg', '');
+        imgElement.onerror = () => {
+            console.log(`Imagem não encontrada: ${img}`);
+        };
         imagesSection.appendChild(imgElement);
     });
     
@@ -224,6 +544,9 @@ function loadQuestion() {
     } else {
         answerInput.value = '';
         answerInput.disabled = state.answeredQuestions.has(state.currentQuestion);
+        if (!state.answeredQuestions.has(state.currentQuestion)) {
+            answerInput.focus();
+        }
     }
     
     // Esconder feedback e resetar estado
@@ -232,7 +555,7 @@ function loadQuestion() {
     
     // Atualizar estado dos botões de navegação
     prevBtn.disabled = state.currentQuestion === 0;
-    nextBtn.disabled = state.currentQuestion === quizData.length - 1 && state.answeredQuestions.has(state.currentQuestion);
+    nextBtn.disabled = state.currentQuestion === quizData.length - 1 && !state.answeredQuestions.has(state.currentQuestion);
     
     // Resetar palavras selecionadas se não foi respondida
     if (!state.answeredQuestions.has(state.currentQuestion)) {
@@ -244,11 +567,10 @@ function loadQuestion() {
 // Configurar escolhas de palavras (modo fácil)
 function setupWordChoices(question) {
     wordChoices.innerHTML = '';
-    sentenceDisplay.innerHTML = '';
     
-    // Criar palavras da frase correta + apenas 3 alternativas extras
+    // Criar palavras da frase correta + apenas 3 alternativas extras (em minúsculas)
     const correctWords = question.french.split(' ');
-    const allWords = [...new Set([...correctWords, ...question.alternatives.slice(0, 3)])];
+    const allWords = [...new Set([...correctWords, ...question.alternatives])];
     
     // Embaralhar palavras
     const shuffledWords = [...allWords].sort(() => Math.random() - 0.5);
@@ -286,26 +608,28 @@ function updateSentenceDisplay() {
             wordElement.className = 'sentence-word';
             wordElement.textContent = word;
             
-            // Adicionar botão para remover palavra
-            const removeBtn = document.createElement('button');
-            removeBtn.className = 'remove-word';
-            removeBtn.textContent = '×';
-            removeBtn.addEventListener('click', () => {
-                if (!state.answeredQuestions.has(state.currentQuestion)) {
-                    state.selectedWords.splice(index, 1);
-                    updateSentenceDisplay();
-                    // Reativar o botão da palavra removida
-                    const wordBtns = document.querySelectorAll('.word-btn');
-                    wordBtns.forEach(btn => {
-                        if (btn.textContent === word) {
-                            btn.disabled = false;
-                            btn.classList.remove('used');
-                        }
-                    });
-                }
-            });
+            // Adicionar botão para remover palavra apenas se não foi respondida
+            if (!state.answeredQuestions.has(state.currentQuestion)) {
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-word';
+                removeBtn.textContent = '×';
+                removeBtn.addEventListener('click', () => {
+                    if (!state.answeredQuestions.has(state.currentQuestion)) {
+                        state.selectedWords.splice(index, 1);
+                        updateSentenceDisplay();
+                        // Reativar o botão da palavra removida
+                        const wordBtns = document.querySelectorAll('.word-btn');
+                        wordBtns.forEach(btn => {
+                            if (btn.textContent === word) {
+                                btn.disabled = false;
+                                btn.classList.remove('used');
+                            }
+                        });
+                    }
+                });
+                wordElement.appendChild(removeBtn);
+            }
             
-            wordElement.appendChild(removeBtn);
             sentenceDisplay.appendChild(wordElement);
         });
     }
@@ -316,7 +640,9 @@ function playAudio() {
     const question = quizData[state.currentQuestion];
     const audio = new Audio(question.audio);
     audio.playbackRate = state.audioPlaybackRate;
-    audio.play();
+    audio.play().catch(e => {
+        console.log('Erro ao reproduzir áudio:', e);
+    });
     
     // Feedback visual
     audioBtn.classList.add('playing');
