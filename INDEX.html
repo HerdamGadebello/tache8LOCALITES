@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aprenda Francês</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Página Inicial (Introdução) -->
+    <div id="intro-page" class="page active">
+        <div class="video-container">
+            <video id="intro-video" autoplay muted>
+                <source src="VIDEOINTRO.mp4" type="video/mp4">
+                Seu navegador não suporta o elemento de vídeo.
+            </video>
+            <audio id="intro-audio" autoplay>
+                <source src="SOMINTRO.mp3" type="audio/mp3">
+                Seu navegador não suporta o elemento de áudio.
+            </audio>
+        </div>
+    </div>
+
+    <!-- Página 02 (Tela Inicial do Quiz) -->
+    <div id="home-page" class="page">
+        <div class="home-container">
+            <img src="MASCOTENEUTRO.png" alt="Mascote" class="mascot">
+            <button id="start-btn" class="start-btn">INICIAR EXERCÍCIO</button>
+            <div id="difficulty-buttons" class="difficulty-buttons hidden">
+                <button class="difficulty-btn" data-difficulty="easy">FÁCIL</button>
+                <button class="difficulty-btn" data-difficulty="hard">DIFÍCIL</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estrutura do Quiz -->
+    <div id="quiz-page" class="page">
+        <div class="quiz-container">
+            <img src="LOGODAMIAO.png" alt="Logo" class="logo">
+            
+            <div class="question-header">
+                <div class="mode-indicator" id="mode-indicator">
+                    <span id="mode-text">FORME CORRETAMENTE A FRASE COM A AJUDA DO ÁUDIO E DAS IMAGENS</span>
+                </div>
+                <div class="french-sentence" id="french-sentence"></div>
+            </div>
+
+            <div class="audio-section">
+                <button id="audio-btn" class="audio-btn">
+                    <span>🔊</span> Ouvir Áudio
+                </button>
+                <div class="audio-controls">
+                    <input type="range" id="playback-rate" min="0.5" max="2" step="0.1" value="1">
+                    <span id="rate-value">1x</span>
+                </div>
+            </div>
+
+            <div class="images-section" id="images-section"></div>
+
+            <div class="exercise-section">
+                <div id="word-choices" class="word-choices"></div>
+                <div id="translation-input" class="translation-input hidden">
+                    <input type="text" id="answer-input" placeholder="Digite a tradução...">
+                </div>
+                <button id="check-btn" class="check-btn">Verificar</button>
+            </div>
+
+            <div id="feedback" class="feedback hidden">
+                <div id="result-status"></div>
+                <div id="correct-answer"></div>
+            </div>
+
+            <img src="MASCOTENINHO.png" alt="Mascote Pequeno" class="small-mascote">
+        </div>
+
+        <div class="navigation">
+            <button id="prev-btn" class="nav-btn prev-btn">VOLTAR</button>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div id="progress" class="progress"></div>
+                </div>
+                <span id="progress-text">0/30</span>
+            </div>
+            <button id="next-btn" class="nav-btn next-btn">AVANÇAR</button>
+        </div>
+    </div>
+
+    <!-- Tela de Resultados -->
+    <div id="results-page" class="page">
+        <div class="results-container">
+            <div class="result-message">
+                <div id="main-message"></div>
+                <div id="secondary-message"></div>
+            </div>
+            <img id="result-image" src="" alt="Resultado">
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
