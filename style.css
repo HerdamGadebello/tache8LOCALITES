@@ -137,13 +137,6 @@ body {
     font-size: 1rem;
 }
 
-.french-sentence {
-    color: white;
-    font-family: 'Rockwell', serif;
-    font-size: 1.4rem;
-    font-weight: bold;
-}
-
 .audio-section {
     display: flex;
     flex-direction: column;
@@ -197,6 +190,60 @@ body {
     margin-bottom: 20px;
 }
 
+/* Modo Fácil */
+.sentence-builder {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 15px;
+    min-height: 80px;
+    margin-bottom: 15px;
+}
+
+.sentence-display {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    min-height: 50px;
+}
+
+.sentence-placeholder {
+    color: rgba(255, 255, 255, 0.6);
+    font-style: italic;
+    text-align: center;
+    width: 100%;
+}
+
+.sentence-word {
+    background-color: #10C894;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+}
+
+.remove-word {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.remove-word:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
 .word-choices {
     display: flex;
     flex-wrap: wrap;
@@ -214,18 +261,33 @@ body {
     font-family: 'Poppins', sans-serif;
 }
 
-.word-btn.selected {
+.word-btn:hover:not(:disabled) {
+    background-color: #B0A0D0;
+}
+
+.word-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.word-btn.used {
     background-color: #10C894;
     color: white;
 }
 
-.translation-input input {
+/* Modo Difícil */
+.hard-mode input {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     border-radius: 5px;
     border: 1px solid #ccc;
     font-size: 1rem;
     font-family: 'Poppins', sans-serif;
+}
+
+.hard-mode input:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
 }
 
 .check-btn {
@@ -233,20 +295,28 @@ body {
     color: white;
     border: none;
     border-radius: 10px;
-    padding: 10px 20px;
-    font-size: 1rem;
+    padding: 12px 30px;
+    font-size: 1.1rem;
     cursor: pointer;
     align-self: center;
     transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
 }
 
-.check-btn:hover {
+.check-btn:hover:not(:disabled) {
     background-color: #2e6c47;
+    transform: scale(1.05);
+}
+
+.check-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .feedback {
     text-align: center;
-    padding: 15px;
+    padding: 20px;
     border-radius: 10px;
     margin-top: 15px;
     background-color: rgba(255, 255, 255, 0.1);
@@ -255,21 +325,21 @@ body {
 .correct {
     color: #10C894;
     font-family: 'Cooper Black', serif;
-    font-size: 1.5rem;
-    margin-bottom: 10px;
+    font-size: 1.8rem;
+    margin-bottom: 15px;
 }
 
 .incorrect {
     color: #C8102E;
     font-family: 'Cooper Black', serif;
-    font-size: 1.5rem;
-    margin-bottom: 10px;
+    font-size: 1.8rem;
+    margin-bottom: 15px;
 }
 
 #correct-answer {
     color: white;
     font-size: 1.1rem;
-    line-height: 1.4;
+    line-height: 1.5;
 }
 
 .small-mascote {
@@ -293,11 +363,16 @@ body {
     background-color: #F5C84C;
     border: none;
     border-radius: 10px;
-    padding: 10px 20px;
+    padding: 12px 25px;
     font-size: 1rem;
     cursor: pointer;
     transition: all 0.3s ease;
     font-family: 'Poppins', sans-serif;
+}
+
+.nav-btn:hover:not(:disabled) {
+    background-color: #e0b43c;
+    transform: scale(1.05);
 }
 
 .next-btn {
@@ -305,9 +380,14 @@ body {
     color: white;
 }
 
+.next-btn:hover:not(:disabled) {
+    background-color: #2e6c47;
+}
+
 .nav-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    transform: none;
 }
 
 .progress-container {
@@ -336,7 +416,7 @@ body {
 .results-container {
     background-color: #002F6C;
     border-radius: 20px;
-    padding: 30px;
+    padding: 40px;
     width: 90%;
     max-width: 800px;
     text-align: center;
@@ -350,22 +430,25 @@ body {
 #main-message {
     background-color: #C8102E;
     border-radius: 50px;
-    padding: 15px 30px;
+    padding: 20px 40px;
     font-family: 'Franklin Gothic Demi', sans-serif;
-    font-size: 2rem;
-    margin-bottom: 20px;
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+    display: inline-block;
 }
 
 #secondary-message {
     font-family: 'Poppins', sans-serif;
-    font-size: 1rem;
-    line-height: 1.5;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    text-align: left;
 }
 
 #result-image {
-    width: 200px;
+    width: 250px;
     height: auto;
-    margin: 0 auto;
+    margin: 30px auto 0;
+    display: block;
 }
 
 /* Utilitários */
@@ -378,10 +461,6 @@ body {
     .quiz-container {
         width: 95%;
         padding: 20px;
-    }
-    
-    .french-sentence {
-        font-size: 1.2rem;
     }
     
     .navigation {
@@ -405,6 +484,15 @@ body {
         padding: 6px 12px;
         font-size: 0.9rem;
     }
+    
+    #main-message {
+        font-size: 2rem;
+        padding: 15px 30px;
+    }
+    
+    #secondary-message {
+        font-size: 1rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -414,10 +502,6 @@ body {
     
     .quiz-container {
         padding: 15px;
-    }
-    
-    .french-sentence {
-        font-size: 1rem;
     }
     
     .mode-indicator span {
@@ -440,5 +524,23 @@ body {
     .difficulty-buttons {
         flex-direction: column;
         gap: 10px;
+    }
+    
+    .sentence-word {
+        padding: 6px 10px;
+        font-size: 0.9rem;
+    }
+    
+    #main-message {
+        font-size: 1.8rem;
+        padding: 12px 25px;
+    }
+    
+    #secondary-message {
+        font-size: 0.9rem;
+    }
+    
+    #result-image {
+        width: 200px;
     }
 }
