@@ -43,7 +43,6 @@
                 <div class="mode-indicator" id="mode-indicator">
                     <span id="mode-text">FORME CORRETAMENTE A FRASE COM A AJUDA DO ÁUDIO E DAS IMAGENS</span>
                 </div>
-                <div class="french-sentence hidden" id="french-sentence"></div>
             </div>
 
             <div class="audio-section">
@@ -59,10 +58,19 @@
             <div class="images-section" id="images-section"></div>
 
             <div class="exercise-section">
-                <div id="word-choices" class="word-choices"></div>
-                <div id="translation-input" class="translation-input hidden">
+                <!-- Modo Fácil -->
+                <div id="easy-mode" class="easy-mode hidden">
+                    <div class="sentence-builder" id="sentence-builder">
+                        <div class="sentence-display" id="sentence-display"></div>
+                    </div>
+                    <div class="word-choices" id="word-choices"></div>
+                </div>
+
+                <!-- Modo Difícil -->
+                <div id="hard-mode" class="hard-mode hidden">
                     <input type="text" id="answer-input" placeholder="Digite a tradução...">
                 </div>
+
                 <button id="check-btn" class="check-btn">Verificar</button>
             </div>
 
