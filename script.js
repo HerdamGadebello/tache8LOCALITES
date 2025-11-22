@@ -1,11 +1,15 @@
-// Dados do quiz
+// Dados do quiz com todas as traduções possíveis
 const quizData = [
     {
         id: 1,
         french: "La boulangerie est au coin de la rue.",
         audio: "La boulangerie est au coin de la rue..mp3",
         images: ["BOULANGERIE.jpg", "COIN.jpg", "RUE.jpg"],
-        correctAnswer: "A padaria fica na esquina da rua.",
+        correctAnswers: [
+            "A padaria fica na esquina da rua.",
+            "A padaria está no canto da rua.",
+            "A padaria está na esquina da rua."
+        ],
         alternatives: ["TOUS LES JOURS", "JE", "VAIS", "À", "LA POSTE", "L'ÉCOLE", "VAS"]
     },
     {
@@ -13,17 +17,59 @@ const quizData = [
         french: "Je mange du pain tous les matins à la boulangerie.",
         audio: "Je mange du pain tous les matins à la boulangerie..mp3",
         images: ["MANGER.jpg", "MATIN.jpg", "BOULANGERIE.jpg"],
-        correctAnswer: "Eu como pão todas as manhãs na padaria.",
+        correctAnswers: [
+            "Eu como pão todas as manhãs na padaria.",
+            "Todas as manhãs, eu como pão na padaria."
+        ],
         alternatives: ["TOUS LES JOURS", "JE", "VAIS", "À", "LA POSTE", "L'ÉCOLE", "VAS"]
     },
-    // Adicione os outros 28 exercícios seguindo o mesmo padrão
-    // ...
+    {
+        id: 3,
+        french: "Le supermarché est loin d'ici.",
+        audio: "Le supermarché est loin d'ici..mp3",
+        images: ["SUPERMARCHÉ.jpg", "LOIN.jpg", "D'ICI.jpg"],
+        correctAnswers: [
+            "O supermercado fica longe daqui.",
+            "O supermercado está longe daqui.",
+            "O supermercado é longe daqui."
+        ],
+        alternatives: ["TOUS LES JOURS", "JE", "VAIS", "À", "LA POSTE", "L'ÉCOLE", "VAS"]
+    },
+    {
+        id: 4,
+        french: "Dimanche, la banque est fermée dans la ville.",
+        audio: "Dimanche, la banque est fermée dans la ville..mp3",
+        images: ["DIMANCHE.jpg", "BANQUE.jpg", "FERMER.jpg", "DANS.jpg", "VILLE.jpg"],
+        correctAnswers: [
+            "No domingo, o banco está fechado na cidade.",
+            "No domingo, o banco é fechado na cidade.",
+            "No domingo, o banco fica fechado na cidade."
+        ],
+        alternatives: ["TOUS LES JOURS", "JE", "VAIS", "À", "LA POSTE", "L'ÉCOLE", "VAS"]
+    },
+    {
+        id: 5,
+        french: "Elle cherche la gare du quartier.",
+        audio: "Elle cherche la gare du quartier..mp3",
+        images: ["ELLE.jpg", "CHERCHER.jpg", "GARE.jpg", "QUARTIER.jpg"],
+        correctAnswers: [
+            "Ela está procurando a estação do bairro.",
+            "Ela procura a estação do bairro.",
+            "Ela busca a estação do bairro."
+        ],
+        alternatives: ["TOUS LES JOURS", "JE", "VAIS", "À", "LA POSTE", "L'ÉCOLE", "VAS"]
+    },
+    // Continue com os outros 25 exercícios seguindo o mesmo padrão...
     {
         id: 30,
         french: "Ma maison est à côté du parc.",
         audio: "Ma maison est à côté du parc..mp3",
         images: ["MAISON.jpg", "À CÔTÉ.jpg", "PARC.jpg"],
-        correctAnswer: "Minha casa fica ao lado do parque.",
+        correctAnswers: [
+            "Minha casa fica ao lado do parque.",
+            "Minha casa está do lado do parque.",
+            "Minha casa é do lado do parque."
+        ],
         alternatives: ["TOUS LES JOURS", "JE", "VAIS", "À", "LA POSTE", "L'ÉCOLE", "VAS"]
     }
 ];
@@ -35,7 +81,8 @@ let state = {
     score: 0,
     userAnswers: [],
     difficulty: 'easy',
-    audioPlaybackRate: 1
+    audioPlaybackRate: 1,
+    selectedWords: []
 };
 
 // Elementos DOM
@@ -85,11 +132,13 @@ document.addEventListener('DOMContentLoaded', () => {
 // Configurar event listeners
 function setupEventListeners() {
     startBtn.addEventListener('click', () => {
+        playSound('BUTTON.mp3');
         difficultyButtons.classList.remove('hidden');
     });
     
     difficultyBtns.forEach(btn => {
         btn.addEventListener('click', (e) => {
+            playSound('BUTTON.mp3');
             state.difficulty = e.target.dataset.difficulty;
             startQuiz();
         });
@@ -104,8 +153,15 @@ function setupEventListeners() {
     
     checkBtn.addEventListener('click', checkAnswer);
     
-    prevBtn.addEventListener('click', goToPreviousQuestion);
-    nextBtn.addEventListener('click', goToNextQuestion);
+    prevBtn.addEventListener('click', () => {
+        playSound('BUTTON.mp3');
+        goToPreviousQuestion();
+    });
+    
+    nextBtn.addEventListener('click', () => {
+        playSound('BUTTON.mp3');
+        goToNextQuestion();
+    });
 }
 
 // Mostrar página específica
@@ -129,8 +185,10 @@ function startQuiz() {
 function updateModeIndicator() {
     if (state.difficulty === 'easy') {
         modeText.textContent = "FORME CORRETAMENTE A FRASE COM A AJUDA DO ÁUDIO E DAS IMAGENS";
+        frenchSentence.classList.add('hidden');
     } else {
         modeText.textContent = "TRADUZA CORRETAMENTE A FRASE COM A AJUDA DO ÁUDIO E DAS IMAGENS";
+        frenchSentence.classList.add('hidden');
     }
 }
 
@@ -138,7 +196,7 @@ function updateModeIndicator() {
 function loadQuestion() {
     const question = quizData[state.currentQuestion];
     
-    // Atualizar frase em francês
+    // Atualizar frase em francês (apenas para referência interna, não mostra para usuário)
     frenchSentence.textContent = question.french;
     
     // Atualizar imagens
@@ -167,22 +225,36 @@ function loadQuestion() {
     // Atualizar estado dos botões de navegação
     prevBtn.disabled = state.currentQuestion === 0;
     nextBtn.disabled = state.currentQuestion === quizData.length - 1;
+    
+    // Resetar palavras selecionadas
+    state.selectedWords = [];
 }
 
 // Configurar escolhas de palavras (modo fácil)
 function setupWordChoices(question) {
     wordChoices.innerHTML = '';
     
-    // Embaralhar alternativas
-    const shuffledAlternatives = [...question.alternatives].sort(() => Math.random() - 0.5);
+    // Criar palavras da frase correta + alternativas extras
+    const correctWords = question.french.split(' ');
+    const allWords = [...new Set([...correctWords, ...question.alternatives])];
     
-    shuffledAlternatives.forEach(alternative => {
+    // Embaralhar palavras
+    const shuffledWords = [...allWords].sort(() => Math.random() - 0.5);
+    
+    shuffledWords.forEach(word => {
         const wordBtn = document.createElement('button');
         wordBtn.className = 'word-btn';
-        wordBtn.textContent = alternative;
+        wordBtn.textContent = word;
         wordBtn.addEventListener('click', () => {
-            // Lógica para selecionar/desselecionar palavras
-            wordBtn.classList.toggle('selected');
+            // Adicionar/remover palavra selecionada
+            const index = state.selectedWords.indexOf(word);
+            if (index > -1) {
+                state.selectedWords.splice(index, 1);
+                wordBtn.classList.remove('selected');
+            } else {
+                state.selectedWords.push(word);
+                wordBtn.classList.add('selected');
+            }
         });
         wordChoices.appendChild(wordBtn);
     });
@@ -204,20 +276,27 @@ function playAudio() {
 
 // Verificar resposta
 function checkAnswer() {
+    playSound('BUTTON.mp3');
     const question = quizData[state.currentQuestion];
     let isCorrect = false;
     
     if (state.difficulty === 'easy') {
-        // Verificar seleção de palavras
-        const selectedWords = Array.from(document.querySelectorAll('.word-btn.selected'))
-            .map(btn => btn.textContent)
-            .join(' ');
-        isCorrect = selectedWords === question.french;
+        // Verificar se as palavras selecionadas formam a frase correta
+        const userPhrase = state.selectedWords.join(' ');
+        isCorrect = userPhrase === question.french;
     } else {
-        // Verificar tradução (case-insensitive)
+        // Verificar tradução (case-insensitive e aceita múltiplas respostas)
         const userAnswer = answerInput.value.trim().toLowerCase();
-        const correctAnswers = question.correctAnswer.split('.').map(a => a.trim().toLowerCase());
-        isCorrect = correctAnswers.includes(userAnswer);
+        const correctAnswers = question.correctAnswers.map(answer => 
+            answer.toLowerCase().replace(/[.,]/g, '').trim()
+        );
+        
+        // Remove pontuação da resposta do usuário para comparação
+        const cleanUserAnswer = userAnswer.replace(/[.,]/g, '').trim();
+        
+        isCorrect = correctAnswers.some(correctAnswer => 
+            cleanUserAnswer === correctAnswer
+        );
     }
     
     // Atualizar pontuação
@@ -233,15 +312,17 @@ function checkAnswer() {
     }
     
     // Mostrar resposta correta
-    correctAnswer.textContent = question.correctAnswer;
+    if (state.difficulty === 'easy') {
+        correctAnswer.textContent = `Frase correta: ${question.french}`;
+    } else {
+        correctAnswer.innerHTML = `Traduções aceitas:<br>${question.correctAnswers.join('<br>')}`;
+    }
     feedback.classList.remove('hidden');
     
     // Salvar resposta do usuário
     state.userAnswers[state.currentQuestion] = {
         question: question.french,
-        userAnswer: state.difficulty === 'easy' ? 
-            Array.from(document.querySelectorAll('.word-btn.selected')).map(btn => btn.textContent).join(' ') :
-            answerInput.value,
+        userAnswer: state.difficulty === 'easy' ? state.selectedWords.join(' ') : answerInput.value,
         isCorrect: isCorrect
     };
     
@@ -252,7 +333,7 @@ function checkAnswer() {
 // Reproduzir som
 function playSound(soundFile) {
     const audio = new Audio(soundFile);
-    audio.play();
+    audio.play().catch(e => console.log('Erro ao reproduzir áudio:', e));
 }
 
 // Navegar para questão anterior
