@@ -380,7 +380,8 @@ let state = {
     difficulty: 'easy',
     audioPlaybackRate: 1,
     selectedWords: [],
-    answeredQuestions: new Set()
+    answeredQuestions: new Set(),
+    currentAudio: null
 };
 
 // Elementos DOM
@@ -439,7 +440,8 @@ function resetState() {
         difficulty: 'easy',
         audioPlaybackRate: 1,
         selectedWords: [],
-        answeredQuestions: new Set()
+        answeredQuestions: new Set(),
+        currentAudio: null
     };
     localStorage.removeItem('frenchQuizProgress');
 }
@@ -484,6 +486,13 @@ function setupEventListeners() {
             answerInput.blur();
         }
     });
+
+    // Permitir Enter para verificar resposta
+    answerInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !checkBtn.disabled) {
+            checkAnswer();
+        }
+    });
 }
 
 // Mostrar página específica
@@ -525,6 +534,12 @@ function updateModeIndicator() {
 // Carregar questão atual
 function loadQuestion() {
     const question = quizData[state.currentQuestion];
+    
+    // Parar áudio atual se estiver tocando
+    if (state.currentAudio) {
+        state.currentAudio.pause();
+        state.currentAudio = null;
+    }
     
     // Atualizar imagens
     imagesSection.innerHTML = '';
@@ -568,9 +583,24 @@ function loadQuestion() {
 function setupWordChoices(question) {
     wordChoices.innerHTML = '';
     
-    // Criar palavras da frase correta + apenas 3 alternativas extras (em minúsculas)
-    const correctWords = question.french.split(' ');
-    const allWords = [...new Set([...correctWords, ...question.alternatives])];
+    // Analisar a frase para identificar palavras repetidas
+    const words = question.french.split(' ');
+    const wordCount = {};
+    words.forEach(word => {
+        wordCount[word] = (wordCount[word] || 0) + 1;
+    });
+    
+    // Criar array com palavras repetidas conforme necessário
+    let allWords = [];
+    Object.keys(wordCount).forEach(word => {
+        for (let i = 0; i < wordCount[word]; i++) {
+            allWords.push(word);
+        }
+    });
+    
+    // Adicionar apenas 3 alternativas extras
+    const extraWords = question.alternatives.slice(0, 3);
+    allWords = [...allWords, ...extraWords];
     
     // Embaralhar palavras
     const shuffledWords = [...allWords].sort(() => Math.random() - 0.5);
@@ -585,8 +615,20 @@ function setupWordChoices(question) {
                 // Adicionar palavra à frase
                 state.selectedWords.push(word);
                 updateSentenceDisplay();
-                wordBtn.disabled = true;
-                wordBtn.classList.add('used');
+                
+                // Desabilitar apenas se não houver mais instâncias disponíveis
+                const currentWordCount = state.selectedWords.filter(w => w === word).length;
+                const availableWordCount = shuffledWords.filter(w => w === word).length;
+                
+                if (currentWordCount >= availableWordCount) {
+                    const wordBtns = document.querySelectorAll('.word-btn');
+                    wordBtns.forEach(btn => {
+                        if (btn.textContent === word && !btn.disabled) {
+                            btn.disabled = true;
+                            btn.classList.add('used');
+                        }
+                    });
+                }
             }
         });
         wordChoices.appendChild(wordBtn);
@@ -617,12 +659,15 @@ function updateSentenceDisplay() {
                     if (!state.answeredQuestions.has(state.currentQuestion)) {
                         state.selectedWords.splice(index, 1);
                         updateSentenceDisplay();
-                        // Reativar o botão da palavra removida
+                        
+                        // Reativar uma instância da palavra removida
                         const wordBtns = document.querySelectorAll('.word-btn');
+                        let reactivated = false;
                         wordBtns.forEach(btn => {
-                            if (btn.textContent === word) {
+                            if (btn.textContent === word && btn.disabled && !reactivated) {
                                 btn.disabled = false;
                                 btn.classList.remove('used');
+                                reactivated = true;
                             }
                         });
                     }
@@ -638,10 +683,19 @@ function updateSentenceDisplay() {
 // Reproduzir áudio
 function playAudio() {
     const question = quizData[state.currentQuestion];
-    const audio = new Audio(question.audio);
-    audio.playbackRate = state.audioPlaybackRate;
-    audio.play().catch(e => {
+    
+    // Parar áudio atual se estiver tocando
+    if (state.currentAudio) {
+        state.currentAudio.pause();
+    }
+    
+    // Criar novo áudio
+    state.currentAudio = new Audio(question.audio);
+    state.currentAudio.playbackRate = state.audioPlaybackRate;
+    
+    state.currentAudio.play().catch(e => {
         console.log('Erro ao reproduzir áudio:', e);
+        console.log('Tentando reproduzir:', question.audio);
     });
     
     // Feedback visual
@@ -688,9 +742,15 @@ function checkAnswer() {
         answerInput.disabled = true;
     }
     
-    // Atualizar pontuação
+    // Atualizar pontuação apenas se não foi respondida antes
+    if (!state.userAnswers[state.currentQuestion]) {
+        if (isCorrect) {
+            state.score++;
+        }
+    }
+    
+    // Feedback sonoro
     if (isCorrect) {
-        state.score++;
         playSound('WIN.wav');
         resultStatus.textContent = 'CORRETO';
         resultStatus.className = 'correct';
@@ -700,19 +760,25 @@ function checkAnswer() {
         resultStatus.className = 'incorrect';
     }
     
-    // Mostrar resposta correta
+    // Mostrar resposta correta com TODAS as traduções possíveis
+    let correctAnswerHTML = '';
     if (state.difficulty === 'easy') {
-        correctAnswer.textContent = `Frase correta: ${question.french}`;
-    } else {
-        correctAnswer.innerHTML = `Traduções aceitas:<br>${question.correctAnswers.join('<br>')}`;
+        correctAnswerHTML = `Frase correta: ${question.french}<br><br>`;
     }
+    correctAnswerHTML += `<strong>Traduções aceitas:</strong><br>`;
+    question.correctAnswers.forEach((answer, index) => {
+        correctAnswerHTML += `${index + 1}. ${answer}<br>`;
+    });
+    
+    correctAnswer.innerHTML = correctAnswerHTML;
     feedback.classList.remove('hidden');
     
     // Salvar resposta do usuário
     state.userAnswers[state.currentQuestion] = {
         question: question.french,
         userAnswer: state.difficulty === 'easy' ? state.selectedWords.join(' ') : answerInput.value,
-        isCorrect: isCorrect
+        isCorrect: isCorrect,
+        score: isCorrect ? 1 : 0
     };
     
     // Atualizar botão próximo se for a última pergunta
@@ -722,6 +788,9 @@ function checkAnswer() {
     
     // Salvar progresso
     saveProgress();
+    
+    // Debug: mostrar pontuação atual
+    console.log(`Pontuação atual: ${state.score}/${state.currentQuestion + 1}`);
 }
 
 // Reproduzir som
@@ -761,27 +830,40 @@ function updateProgress() {
 function showResults() {
     showPage('results-page');
     
-    const percentage = (state.score / quizData.length) * 100;
+    // Calcular pontuação final baseada nas respostas salvas
+    let finalScore = 0;
+    state.userAnswers.forEach(answer => {
+        if (answer && answer.isCorrect) {
+            finalScore++;
+        }
+    });
+    
+    // Garantir que a pontuação não exceda o número de questões
+    finalScore = Math.min(finalScore, quizData.length);
+    
+    const percentage = (finalScore / quizData.length) * 100;
+    
+    console.log(`Resultado final: ${finalScore}/${quizData.length} (${percentage}%)`);
     
     // Determinar resultado com base na porcentagem
     if (percentage >= 95) {
         mainMessage.textContent = "EXCELENTE";
-        secondaryMessage.textContent = `Parabéns pelo seu desempenho excepcional! Você alcançou um resultado EXCELENTE, acertando ${state.score} das ${quizData.length} palavras no quiz de escrita em francês! Isso demonstra um domínio impressionante das expressões e da ortografia francesa. Continue assim, pois seu esforço e dedicação são inspiradores! Este resultado reflete não apenas sua habilidade linguística, mas também sua atenção aos detalhes e compromisso em aprender. Que tal continuar explorando o idioma com o mesmo entusiasmo? A prática constante vai te levar ainda mais longe.`;
+        secondaryMessage.textContent = `Parabéns pelo seu desempenho excepcional! Você alcançou um resultado EXCELENTE, acertando ${finalScore} das ${quizData.length} palavras no quiz de escrita em francês! Isso demonstra um domínio impressionante das expressões e da ortografia francesa. Continue assim, pois seu esforço e dedicação são inspiradores! Este resultado reflete não apenas sua habilidade linguística, mas também sua atenção aos detalhes e compromisso em aprender. Que tal continuar explorando o idioma com o mesmo entusiasmo? A prática constante vai te levar ainda mais longe.`;
         resultImage.src = "MASCOTEFELIZ.png";
         playSound("POSITIVO.mp3");
     } else if (percentage >= 75) {
         mainMessage.textContent = "PARABÉNS";
-        secondaryMessage.textContent = `Parabéns pelo seu desempenho! Você obteve um BOM resultado, acertando ${state.score} das ${quizData.length} palavras no quiz de escrita em francês! Isso mostra que você está no caminho certo, com uma sólida compreensão do idioma. Sua dedicação está valendo a pena, e cada palavra certa é um passo rumo à fluência. Continue assim, brilhando no aprendizado do francês!`;
+        secondaryMessage.textContent = `Parabéns pelo seu desempenho! Você obteve um BOM resultado, acertando ${finalScore} das ${quizData.length} palavras no quiz de escrita em francês! Isso mostra que você está no caminho certo, com uma sólida compreensão do idioma. Sua dedicação está valendo a pena, e cada palavra certa é um passo rumo à fluência. Continue assim, brilhando no aprendizado do francês!`;
         resultImage.src = "MASCOTEALEGRE.png";
         playSound("POSITIVO.mp3");
     } else if (percentage >= 60) {
         mainMessage.textContent = "QUASE LÁ";
-        secondaryMessage.textContent = `Você alcançou o nível SUFICIENTE, acertando ${state.score} das ${quizData.length} palavras no quiz de escrita em francês! Isso indica um progresso notável, com uma boa base no idioma. Sua dedicação está clara, e você está muito próximo de resultados ainda melhores. Cada palavra escrita é um avanço no aprendizado do francês. Continue se empenhando, e logo verá seu desempenho crescer! Siga firme na jornada para dominar o idioma!`;
+        secondaryMessage.textContent = `Você alcançou o nível SUFICIENTE, acertando ${finalScore} das ${quizData.length} palavras no quiz de escrita em francês! Isso indica um progresso notável, com uma boa base no idioma. Sua dedicação está clara, e você está muito próximo de resultados ainda melhores. Cada palavra escrita é um avanço no aprendizado do francês. Continue se empenhando, e logo verá seu desempenho crescer! Siga firme na jornada para dominar o idioma!`;
         resultImage.src = "MASCOTEDUVIDA.png";
         playSound("NEGATIVO.mp3");
     } else {
         mainMessage.textContent = "NÃO FOI DESSA VEZ";
-        secondaryMessage.textContent = `Você obteve o nível INSUFICIENTE, acertando ${state.score} das ${quizData.length} palavras no quiz de escrita em francês. Não desanime! Cada tentativa é uma oportunidade de aprendizado, e você já deu o primeiro passo ao participar. O francês pode ser desafiador, mas com prática, você vai melhorar. Reforce as palavras e continue se dedicando. Sua persistência vai te levar mais longe na jornada do idioma!`;
+        secondaryMessage.textContent = `Você obteve o nível INSUFICIENTE, acertando ${finalScore} das ${quizData.length} palavras no quiz de escrita em francês. Não desanime! Cada tentativa é uma oportunidade de aprendizado, e você já deu o primeiro passo ao participar. O francês pode ser desafiador, mas com prática, você vai melhorar. Reforce as palavras e continue se dedicando. Sua persistência vai te levar mais longe na jornada do idioma!`;
         resultImage.src = "MASCOTEDUVIDA.png";
         playSound("NEGATIVO.mp3");
     }
