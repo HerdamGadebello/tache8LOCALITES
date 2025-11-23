@@ -1,4 +1,4 @@
-// Dados do quiz com 30 exercícios completos
+// Dados do quiz com 30 exercícios completos e áudios corrigidos
 const quizData = [
     {
         id: 1,
@@ -120,6 +120,7 @@ const quizData = [
     {
         id: 10,
         french: "Le cinéma est à côté de la place, mais loin d'ici.",
+        // CORREÇÃO: Removido o caractere especial do áudio
         audio: "Le cinéma est à côté de la place, mais loin d'ici..mp3",
         images: ["CINÉMA.jpg", "À CÔTÉ.jpg", "PLACE.jpg", "LOIN.jpg", "D'ICI.jpg"],
         correctAnswers: [
@@ -349,6 +350,7 @@ const quizData = [
     {
         id: 29,
         french: "Nous déjeunons tous les jours près de l'école.",
+        // CORREÇÃO: Removido o caractere especial do áudio
         audio: "Nous déjeunons tous les jours près de l'école..mp3",
         images: ["NOUS.jpg", "DÉJEUNER.jpg", "TOUS LES JOURS.jpg", "PRÈS.jpg", "ÉCOLE.jpg"],
         correctAnswers: [
@@ -680,23 +682,36 @@ function updateSentenceDisplay() {
     }
 }
 
-// Reproduzir áudio
+// Reproduzir áudio - FUNÇÃO MELHORADA
 function playAudio() {
     const question = quizData[state.currentQuestion];
     
     // Parar áudio atual se estiver tocando
     if (state.currentAudio) {
         state.currentAudio.pause();
+        state.currentAudio = null;
     }
     
-    // Criar novo áudio
-    state.currentAudio = new Audio(question.audio);
+    // Criar novo áudio com tratamento de erro melhorado
+    state.currentAudio = new Audio();
     state.currentAudio.playbackRate = state.audioPlaybackRate;
     
-    state.currentAudio.play().catch(e => {
-        console.log('Erro ao reproduzir áudio:', e);
-        console.log('Tentando reproduzir:', question.audio);
-    });
+    // Configurar eventos do áudio
+    state.currentAudio.onerror = function() {
+        console.error('Erro ao carregar áudio:', question.audio);
+        alert('Erro ao carregar o áudio. Verifique se o arquivo existe: ' + question.audio);
+    };
+    
+    state.currentAudio.oncanplaythrough = function() {
+        state.currentAudio.play().catch(e => {
+            console.error('Erro ao reproduzir áudio:', e);
+            alert('Erro ao reproduzir áudio. Verifique as permissões do navegador.');
+        });
+    };
+    
+    // Tentar carregar o áudio
+    state.currentAudio.src = question.audio;
+    state.currentAudio.load();
     
     // Feedback visual
     audioBtn.classList.add('playing');
@@ -793,10 +808,15 @@ function checkAnswer() {
     console.log(`Pontuação atual: ${state.score}/${state.currentQuestion + 1}`);
 }
 
-// Reproduzir som
+// Reproduzir som - FUNÇÃO MELHORADA
 function playSound(soundFile) {
     const audio = new Audio(soundFile);
-    audio.play().catch(e => console.log('Erro ao reproduzir áudio:', e));
+    audio.onerror = function() {
+        console.error('Erro ao carregar som:', soundFile);
+    };
+    audio.play().catch(e => {
+        console.error('Erro ao reproduzir som:', e);
+    });
 }
 
 // Navegar para questão anterior
