@@ -1,4 +1,4 @@
-// Dados do quiz com 30 exercícios completos e áudios corrigidos
+// Dados do quiz com 30 exercícios completos
 const quizData = [
     {
         id: 1,
@@ -120,7 +120,6 @@ const quizData = [
     {
         id: 10,
         french: "Le cinéma est à côté de la place, mais loin d'ici.",
-        // CORREÇÃO: Removido o caractere especial do áudio
         audio: "Le cinéma est à côté de la place, mais loin d'ici..mp3",
         images: ["CINÉMA.jpg", "À CÔTÉ.jpg", "PLACE.jpg", "LOIN.jpg", "D'ICI.jpg"],
         correctAnswers: [
@@ -350,7 +349,6 @@ const quizData = [
     {
         id: 29,
         french: "Nous déjeunons tous les jours près de l'école.",
-        // CORREÇÃO: Removido o caractere especial do áudio
         audio: "Nous déjeunons tous les jours près de l'école..mp3",
         images: ["NOUS.jpg", "DÉJEUNER.jpg", "TOUS LES JOURS.jpg", "PRÈS.jpg", "ÉCOLE.jpg"],
         correctAnswers: [
@@ -383,7 +381,8 @@ let state = {
     audioPlaybackRate: 1,
     selectedWords: [],
     answeredQuestions: new Set(),
-    currentAudio: null
+    currentAudio: null,
+    selectedExercises: [] // Array para armazenar os exercícios selecionados aleatoriamente
 };
 
 // Elementos DOM
@@ -443,7 +442,8 @@ function resetState() {
         audioPlaybackRate: 1,
         selectedWords: [],
         answeredQuestions: new Set(),
-        currentAudio: null
+        currentAudio: null,
+        selectedExercises: []
     };
     localStorage.removeItem('frenchQuizProgress');
 }
@@ -465,17 +465,20 @@ function setupEventListeners() {
     
     audioBtn.addEventListener('click', playAudio);
     
+    // Configurar controle de velocidade do áudio - CORRIGIDO
     playbackRate.addEventListener('input', (e) => {
         state.audioPlaybackRate = parseFloat(e.target.value);
         rateValue.textContent = `${state.audioPlaybackRate}x`;
+        
+        // Aplicar a velocidade ao áudio atual se estiver tocando
+        if (state.currentAudio) {
+            state.currentAudio.playbackRate = state.audioPlaybackRate;
+        }
     });
     
     checkBtn.addEventListener('click', checkAnswer);
     
-    prevBtn.addEventListener('click', () => {
-        playSound('BUTTON.mp3');
-        goToPreviousQuestion();
-    });
+    // Removido event listener do botão voltar
     
     nextBtn.addEventListener('click', () => {
         playSound('BUTTON.mp3');
@@ -506,8 +509,26 @@ function showPage(pageId) {
     state.currentPage = pageId;
 }
 
+// Selecionar 15 exercícios aleatórios do repertório de 30
+function selectRandomExercises() {
+    // Criar array com todos os índices (0-29)
+    const allIndices = Array.from({length: quizData.length}, (_, i) => i);
+    
+    // Embaralhar os índices
+    const shuffledIndices = allIndices.sort(() => Math.random() - 0.5);
+    
+    // Selecionar os primeiros 15 índices
+    const selectedIndices = shuffledIndices.slice(0, 15);
+    
+    // Retornar os exercícios correspondentes
+    return selectedIndices.map(index => quizData[index]);
+}
+
 // Iniciar quiz
 function startQuiz() {
+    // Selecionar 15 exercícios aleatórios
+    state.selectedExercises = selectRandomExercises();
+    
     // Resetar para primeira questão
     state.currentQuestion = 0;
     state.score = 0;
@@ -535,7 +556,7 @@ function updateModeIndicator() {
 
 // Carregar questão atual
 function loadQuestion() {
-    const question = quizData[state.currentQuestion];
+    const question = state.selectedExercises[state.currentQuestion];
     
     // Parar áudio atual se estiver tocando
     if (state.currentAudio) {
@@ -571,8 +592,11 @@ function loadQuestion() {
     checkBtn.disabled = state.answeredQuestions.has(state.currentQuestion);
     
     // Atualizar estado dos botões de navegação
-    prevBtn.disabled = state.currentQuestion === 0;
-    nextBtn.disabled = state.currentQuestion === quizData.length - 1 && !state.answeredQuestions.has(state.currentQuestion);
+    // REMOVIDO: prevBtn.disabled = state.currentQuestion === 0;
+    prevBtn.style.display = 'none'; // Esconder botão voltar
+    
+    // Botão avançar só fica habilitado depois de verificar
+    nextBtn.disabled = !state.answeredQuestions.has(state.currentQuestion);
     
     // Resetar palavras selecionadas se não foi respondida
     if (!state.answeredQuestions.has(state.currentQuestion)) {
@@ -682,9 +706,9 @@ function updateSentenceDisplay() {
     }
 }
 
-// Reproduzir áudio - FUNÇÃO MELHORADA
+// Reproduzir áudio - FUNÇÃO MELHORADA com controle de velocidade
 function playAudio() {
-    const question = quizData[state.currentQuestion];
+    const question = state.selectedExercises[state.currentQuestion];
     
     // Parar áudio atual se estiver tocando
     if (state.currentAudio) {
@@ -694,7 +718,7 @@ function playAudio() {
     
     // Criar novo áudio com tratamento de erro melhorado
     state.currentAudio = new Audio();
-    state.currentAudio.playbackRate = state.audioPlaybackRate;
+    state.currentAudio.playbackRate = state.audioPlaybackRate; // Aplicar velocidade
     
     // Configurar eventos do áudio
     state.currentAudio.onerror = function() {
@@ -723,7 +747,7 @@ function playAudio() {
 // Verificar resposta
 function checkAnswer() {
     playSound('BUTTON.mp3');
-    const question = quizData[state.currentQuestion];
+    const question = state.selectedExercises[state.currentQuestion];
     let isCorrect = false;
     
     // Marcar como respondida
@@ -796,10 +820,8 @@ function checkAnswer() {
         score: isCorrect ? 1 : 0
     };
     
-    // Atualizar botão próximo se for a última pergunta
-    if (state.currentQuestion === quizData.length - 1) {
-        nextBtn.disabled = false;
-    }
+    // Habilitar botão avançar após verificar
+    nextBtn.disabled = false;
     
     // Salvar progresso
     saveProgress();
@@ -819,18 +841,12 @@ function playSound(soundFile) {
     });
 }
 
-// Navegar para questão anterior
-function goToPreviousQuestion() {
-    if (state.currentQuestion > 0) {
-        state.currentQuestion--;
-        loadQuestion();
-        updateProgress();
-    }
-}
+// Navegar para questão anterior - REMOVIDA
+// function goToPreviousQuestion() { ... }
 
 // Navegar para próxima questão
 function goToNextQuestion() {
-    if (state.currentQuestion < quizData.length - 1) {
+    if (state.currentQuestion < state.selectedExercises.length - 1) {
         state.currentQuestion++;
         loadQuestion();
         updateProgress();
@@ -841,9 +857,9 @@ function goToNextQuestion() {
 
 // Atualizar barra de progresso
 function updateProgress() {
-    const progress = ((state.currentQuestion + 1) / quizData.length) * 100;
+    const progress = ((state.currentQuestion + 1) / state.selectedExercises.length) * 100;
     progressBar.style.width = `${progress}%`;
-    progressText.textContent = `${state.currentQuestion + 1}/${quizData.length}`;
+    progressText.textContent = `${state.currentQuestion + 1}/${state.selectedExercises.length}`;
 }
 
 // Mostrar resultados
@@ -859,31 +875,31 @@ function showResults() {
     });
     
     // Garantir que a pontuação não exceda o número de questões
-    finalScore = Math.min(finalScore, quizData.length);
+    finalScore = Math.min(finalScore, state.selectedExercises.length);
     
-    const percentage = (finalScore / quizData.length) * 100;
+    const percentage = (finalScore / state.selectedExercises.length) * 100;
     
-    console.log(`Resultado final: ${finalScore}/${quizData.length} (${percentage}%)`);
+    console.log(`Resultado final: ${finalScore}/${state.selectedExercises.length} (${percentage}%)`);
     
     // Determinar resultado com base na porcentagem
     if (percentage >= 95) {
         mainMessage.textContent = "EXCELENTE";
-        secondaryMessage.textContent = `Parabéns pelo seu desempenho excepcional! Você alcançou um resultado EXCELENTE, acertando ${finalScore} das ${quizData.length} palavras no quiz de escrita em francês! Isso demonstra um domínio impressionante das expressões e da ortografia francesa. Continue assim, pois seu esforço e dedicação são inspiradores! Este resultado reflete não apenas sua habilidade linguística, mas também sua atenção aos detalhes e compromisso em aprender. Que tal continuar explorando o idioma com o mesmo entusiasmo? A prática constante vai te levar ainda mais longe.`;
+        secondaryMessage.textContent = `Parabéns pelo seu desempenho excepcional! Você alcançou um resultado EXCELENTE, acertando ${finalScore} das ${state.selectedExercises.length} palavras no quiz de escrita em francês! Isso demonstra um domínio impressionante das expressões e da ortografia francesa. Continue assim, pois seu esforço e dedicação são inspiradores! Este resultado reflete não apenas sua habilidade linguística, mas também sua atenção aos detalhes e compromisso em aprender. Que tal continuar explorando o idioma com o mesmo entusiasmo? A prática constante vai te levar ainda mais longe.`;
         resultImage.src = "MASCOTEFELIZ.png";
         playSound("POSITIVO.mp3");
     } else if (percentage >= 75) {
         mainMessage.textContent = "PARABÉNS";
-        secondaryMessage.textContent = `Parabéns pelo seu desempenho! Você obteve um BOM resultado, acertando ${finalScore} das ${quizData.length} palavras no quiz de escrita em francês! Isso mostra que você está no caminho certo, com uma sólida compreensão do idioma. Sua dedicação está valendo a pena, e cada palavra certa é um passo rumo à fluência. Continue assim, brilhando no aprendizado do francês!`;
+        secondaryMessage.textContent = `Parabéns pelo seu desempenho! Você obteve um BOM resultado, acertando ${finalScore} das ${state.selectedExercises.length} palavras no quiz de escrita em francês! Isso mostra que você está no caminho certo, com uma sólida compreensão do idioma. Sua dedicação está valendo a pena, e cada palavra certa é um passo rumo à fluência. Continue assim, brilhando no aprendizado do francês!`;
         resultImage.src = "MASCOTEALEGRE.png";
         playSound("POSITIVO.mp3");
     } else if (percentage >= 60) {
         mainMessage.textContent = "QUASE LÁ";
-        secondaryMessage.textContent = `Você alcançou o nível SUFICIENTE, acertando ${finalScore} das ${quizData.length} palavras no quiz de escrita em francês! Isso indica um progresso notável, com uma boa base no idioma. Sua dedicação está clara, e você está muito próximo de resultados ainda melhores. Cada palavra escrita é um avanço no aprendizado do francês. Continue se empenhando, e logo verá seu desempenho crescer! Siga firme na jornada para dominar o idioma!`;
+        secondaryMessage.textContent = `Você alcançou o nível SUFICIENTE, acertando ${finalScore} das ${state.selectedExercises.length} palavras no quiz de escrita em francês! Isso indica um progresso notável, com uma boa base no idioma. Sua dedicação está clara, e você está muito próximo de resultados ainda melhores. Cada palavra escrita é um avanço no aprendizado do francês. Continue se empenhando, e logo verá seu desempenho crescer! Siga firme na jornada para dominar o idioma!`;
         resultImage.src = "MASCOTEDUVIDA.png";
         playSound("NEGATIVO.mp3");
     } else {
         mainMessage.textContent = "NÃO FOI DESSA VEZ";
-        secondaryMessage.textContent = `Você obteve o nível INSUFICIENTE, acertando ${finalScore} das ${quizData.length} palavras no quiz de escrita em francês. Não desanime! Cada tentativa é uma oportunidade de aprendizado, e você já deu o primeiro passo ao participar. O francês pode ser desafiador, mas com prática, você vai melhorar. Reforce as palavras e continue se dedicando. Sua persistência vai te levar mais longe na jornada do idioma!`;
+        secondaryMessage.textContent = `Você obteve o nível INSUFICIENTE, acertando ${finalScore} das ${state.selectedExercises.length} palavras no quiz de escrita em francês. Não desanime! Cada tentativa é uma oportunidade de aprendizado, e você já deu o primeiro passo ao participar. O francês pode ser desafiador, mas com prática, você vai melhorar. Reforce as palavras e continue se dedicando. Sua persistência vai te levar mais longe na jornada do idioma!`;
         resultImage.src = "MASCOTEDUVIDA.png";
         playSound("NEGATIVO.mp3");
     }
@@ -896,7 +912,8 @@ function saveProgress() {
         score: state.score,
         userAnswers: state.userAnswers,
         difficulty: state.difficulty,
-        answeredQuestions: Array.from(state.answeredQuestions)
+        answeredQuestions: Array.from(state.answeredQuestions),
+        selectedExercises: state.selectedExercises
     };
     localStorage.setItem('frenchQuizProgress', JSON.stringify(progressData));
 }
@@ -911,5 +928,6 @@ function loadProgress() {
         state.userAnswers = progressData.userAnswers || [];
         state.difficulty = progressData.difficulty || 'easy';
         state.answeredQuestions = new Set(progressData.answeredQuestions || []);
+        state.selectedExercises = progressData.selectedExercises || [];
     }
 }
