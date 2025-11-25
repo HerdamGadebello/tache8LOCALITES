@@ -163,6 +163,9 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 8px 15px;
+    border-radius: 20px;
 }
 
 .audio-controls input {
@@ -355,11 +358,17 @@ body {
 
 .navigation {
     display: flex;
-    justify-content: space-between;
+    justify-content: center; /* Centralizado pois só tem um botão agora */
     align-items: center;
     width: 90%;
     max-width: 800px;
     margin-top: 20px;
+    gap: 20px;
+}
+
+/* Botão voltar removido - mantido no HTML mas escondido via CSS */
+.prev-btn {
+    display: none !important;
 }
 
 .nav-btn {
