@@ -382,7 +382,7 @@ let state = {
     selectedWords: [],
     answeredQuestions: new Set(),
     currentAudio: null,
-    selectedExercises: [] // Array para armazenar os exercícios selecionados aleatoriamente
+    selectedExercises: []
 };
 
 // Elementos DOM
@@ -419,11 +419,9 @@ const resultImage = document.getElementById('result-image');
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', () => {
-    // Resetar estado ao iniciar
     resetState();
     setupEventListeners();
     
-    // Transição automática da página inicial
     introVideo.addEventListener('ended', () => {
         setTimeout(() => {
             showPage('home-page');
@@ -465,20 +463,18 @@ function setupEventListeners() {
     
     audioBtn.addEventListener('click', playAudio);
     
-    // Configurar controle de velocidade do áudio - CORRIGIDO
+    // Controle de velocidade do áudio - CORRIGIDO E FUNCIONAL
     playbackRate.addEventListener('input', (e) => {
         state.audioPlaybackRate = parseFloat(e.target.value);
         rateValue.textContent = `${state.audioPlaybackRate}x`;
         
-        // Aplicar a velocidade ao áudio atual se estiver tocando
+        // Aplicar velocidade ao áudio atual imediatamente
         if (state.currentAudio) {
             state.currentAudio.playbackRate = state.audioPlaybackRate;
         }
     });
     
     checkBtn.addEventListener('click', checkAnswer);
-    
-    // Removido event listener do botão voltar
     
     nextBtn.addEventListener('click', () => {
         playSound('BUTTON.mp3');
@@ -592,7 +588,6 @@ function loadQuestion() {
     checkBtn.disabled = state.answeredQuestions.has(state.currentQuestion);
     
     // Atualizar estado dos botões de navegação
-    // REMOVIDO: prevBtn.disabled = state.currentQuestion === 0;
     prevBtn.style.display = 'none'; // Esconder botão voltar
     
     // Botão avançar só fica habilitado depois de verificar
@@ -706,7 +701,7 @@ function updateSentenceDisplay() {
     }
 }
 
-// Reproduzir áudio - FUNÇÃO MELHORADA com controle de velocidade
+// Reproduzir áudio - FUNÇÃO CORRIGIDA COM CONTROLE DE VELOCIDADE FUNCIONAL
 function playAudio() {
     const question = state.selectedExercises[state.currentQuestion];
     
@@ -716,26 +711,31 @@ function playAudio() {
         state.currentAudio = null;
     }
     
-    // Criar novo áudio com tratamento de erro melhorado
-    state.currentAudio = new Audio();
-    state.currentAudio.playbackRate = state.audioPlaybackRate; // Aplicar velocidade
+    // Criar novo áudio com a velocidade atual
+    state.currentAudio = new Audio(question.audio);
+    state.currentAudio.playbackRate = state.audioPlaybackRate; // Aplicar velocidade atual
     
     // Configurar eventos do áudio
-    state.currentAudio.onerror = function() {
+    state.currentAudio.addEventListener('error', function() {
         console.error('Erro ao carregar áudio:', question.audio);
         alert('Erro ao carregar o áudio. Verifique se o arquivo existe: ' + question.audio);
-    };
+    });
     
-    state.currentAudio.oncanplaythrough = function() {
+    state.currentAudio.addEventListener('canplaythrough', function() {
         state.currentAudio.play().catch(e => {
             console.error('Erro ao reproduzir áudio:', e);
             alert('Erro ao reproduzir áudio. Verifique as permissões do navegador.');
         });
-    };
+    });
     
     // Tentar carregar o áudio
     state.currentAudio.src = question.audio;
     state.currentAudio.load();
+    
+    // Tentar reproduzir imediatamente (fallback)
+    state.currentAudio.play().catch(e => {
+        console.log('Aguardando carregamento do áudio...');
+    });
     
     // Feedback visual
     audioBtn.classList.add('playing');
@@ -830,19 +830,11 @@ function checkAnswer() {
     console.log(`Pontuação atual: ${state.score}/${state.currentQuestion + 1}`);
 }
 
-// Reproduzir som - FUNÇÃO MELHORADA
+// Reproduzir som
 function playSound(soundFile) {
     const audio = new Audio(soundFile);
-    audio.onerror = function() {
-        console.error('Erro ao carregar som:', soundFile);
-    };
-    audio.play().catch(e => {
-        console.error('Erro ao reproduzir som:', e);
-    });
+    audio.play().catch(e => console.log('Erro ao reproduzir som:', e));
 }
-
-// Navegar para questão anterior - REMOVIDA
-// function goToPreviousQuestion() { ... }
 
 // Navegar para próxima questão
 function goToNextQuestion() {
