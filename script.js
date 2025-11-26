@@ -463,14 +463,15 @@ function setupEventListeners() {
     
     audioBtn.addEventListener('click', playAudio);
     
-    // Controle de velocidade do áudio - CORRIGIDO E FUNCIONAL
+    // CONTROLE DE VELOCIDADE CORRIGIDO - FUNCIONAL
     playbackRate.addEventListener('input', (e) => {
-        state.audioPlaybackRate = parseFloat(e.target.value);
-        rateValue.textContent = `${state.audioPlaybackRate}x`;
+        const newRate = parseFloat(e.target.value);
+        state.audioPlaybackRate = newRate;
+        rateValue.textContent = `${newRate}x`;
         
-        // Aplicar velocidade ao áudio atual imediatamente
+        // Aplicar velocidade ao áudio atual se estiver tocando
         if (state.currentAudio) {
-            state.currentAudio.playbackRate = state.audioPlaybackRate;
+            state.currentAudio.playbackRate = newRate;
         }
     });
     
@@ -481,14 +482,12 @@ function setupEventListeners() {
         goToNextQuestion();
     });
 
-    // Permitir digitação no modo difícil
     answerInput.addEventListener('focus', () => {
         if (state.answeredQuestions.has(state.currentQuestion)) {
             answerInput.blur();
         }
     });
 
-    // Permitir Enter para verificar resposta
     answerInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter' && !checkBtn.disabled) {
             checkAnswer();
@@ -507,25 +506,15 @@ function showPage(pageId) {
 
 // Selecionar 15 exercícios aleatórios do repertório de 30
 function selectRandomExercises() {
-    // Criar array com todos os índices (0-29)
     const allIndices = Array.from({length: quizData.length}, (_, i) => i);
-    
-    // Embaralhar os índices
     const shuffledIndices = allIndices.sort(() => Math.random() - 0.5);
-    
-    // Selecionar os primeiros 15 índices
     const selectedIndices = shuffledIndices.slice(0, 15);
-    
-    // Retornar os exercícios correspondentes
     return selectedIndices.map(index => quizData[index]);
 }
 
 // Iniciar quiz
 function startQuiz() {
-    // Selecionar 15 exercícios aleatórios
     state.selectedExercises = selectRandomExercises();
-    
-    // Resetar para primeira questão
     state.currentQuestion = 0;
     state.score = 0;
     state.answeredQuestions.clear();
@@ -588,9 +577,7 @@ function loadQuestion() {
     checkBtn.disabled = state.answeredQuestions.has(state.currentQuestion);
     
     // Atualizar estado dos botões de navegação
-    prevBtn.style.display = 'none'; // Esconder botão voltar
-    
-    // Botão avançar só fica habilitado depois de verificar
+    prevBtn.style.display = 'none';
     nextBtn.disabled = !state.answeredQuestions.has(state.currentQuestion);
     
     // Resetar palavras selecionadas se não foi respondida
@@ -604,14 +591,12 @@ function loadQuestion() {
 function setupWordChoices(question) {
     wordChoices.innerHTML = '';
     
-    // Analisar a frase para identificar palavras repetidas
     const words = question.french.split(' ');
     const wordCount = {};
     words.forEach(word => {
         wordCount[word] = (wordCount[word] || 0) + 1;
     });
     
-    // Criar array com palavras repetidas conforme necessário
     let allWords = [];
     Object.keys(wordCount).forEach(word => {
         for (let i = 0; i < wordCount[word]; i++) {
@@ -619,11 +604,9 @@ function setupWordChoices(question) {
         }
     });
     
-    // Adicionar apenas 3 alternativas extras
     const extraWords = question.alternatives.slice(0, 3);
     allWords = [...allWords, ...extraWords];
     
-    // Embaralhar palavras
     const shuffledWords = [...allWords].sort(() => Math.random() - 0.5);
     
     shuffledWords.forEach(word => {
@@ -633,11 +616,9 @@ function setupWordChoices(question) {
         wordBtn.disabled = state.answeredQuestions.has(state.currentQuestion);
         wordBtn.addEventListener('click', () => {
             if (!state.answeredQuestions.has(state.currentQuestion)) {
-                // Adicionar palavra à frase
                 state.selectedWords.push(word);
                 updateSentenceDisplay();
                 
-                // Desabilitar apenas se não houver mais instâncias disponíveis
                 const currentWordCount = state.selectedWords.filter(w => w === word).length;
                 const availableWordCount = shuffledWords.filter(w => w === word).length;
                 
@@ -671,7 +652,6 @@ function updateSentenceDisplay() {
             wordElement.className = 'sentence-word';
             wordElement.textContent = word;
             
-            // Adicionar botão para remover palavra apenas se não foi respondida
             if (!state.answeredQuestions.has(state.currentQuestion)) {
                 const removeBtn = document.createElement('button');
                 removeBtn.className = 'remove-word';
@@ -681,9 +661,8 @@ function updateSentenceDisplay() {
                         state.selectedWords.splice(index, 1);
                         updateSentenceDisplay();
                         
-                        // Reativar uma instância da palavra removida
-                        const wordBtns = document.querySelectorAll('.word-btn');
                         let reactivated = false;
+                        const wordBtns = document.querySelectorAll('.word-btn');
                         wordBtns.forEach(btn => {
                             if (btn.textContent === word && btn.disabled && !reactivated) {
                                 btn.disabled = false;
@@ -701,7 +680,7 @@ function updateSentenceDisplay() {
     }
 }
 
-// Reproduzir áudio - FUNÇÃO CORRIGIDA COM CONTROLE DE VELOCIDADE FUNCIONAL
+// REPRODUZIR ÁUDIO - COMPLETAMENTE CORRIGIDO
 function playAudio() {
     const question = state.selectedExercises[state.currentQuestion];
     
@@ -711,30 +690,25 @@ function playAudio() {
         state.currentAudio = null;
     }
     
-    // Criar novo áudio com a velocidade atual
+    // Criar novo áudio
     state.currentAudio = new Audio(question.audio);
-    state.currentAudio.playbackRate = state.audioPlaybackRate; // Aplicar velocidade atual
     
-    // Configurar eventos do áudio
-    state.currentAudio.addEventListener('error', function() {
-        console.error('Erro ao carregar áudio:', question.audio);
-        alert('Erro ao carregar o áudio. Verifique se o arquivo existe: ' + question.audio);
+    // CONFIGURAÇÃO CORRETA DA VELOCIDADE
+    state.currentAudio.playbackRate = state.audioPlaybackRate;
+    
+    // Configurar eventos
+    state.currentAudio.addEventListener('loadeddata', function() {
+        console.log('Áudio carregado, velocidade:', state.currentAudio.playbackRate);
     });
     
-    state.currentAudio.addEventListener('canplaythrough', function() {
-        state.currentAudio.play().catch(e => {
-            console.error('Erro ao reproduzir áudio:', e);
-            alert('Erro ao reproduzir áudio. Verifique as permissões do navegador.');
-        });
+    state.currentAudio.addEventListener('error', function(e) {
+        console.error('Erro no áudio:', e);
+        alert('Erro ao carregar áudio: ' + question.audio);
     });
     
-    // Tentar carregar o áudio
-    state.currentAudio.src = question.audio;
-    state.currentAudio.load();
-    
-    // Tentar reproduzir imediatamente (fallback)
+    // Reproduzir áudio
     state.currentAudio.play().catch(e => {
-        console.log('Aguardando carregamento do áudio...');
+        console.error('Erro ao reproduzir:', e);
     });
     
     // Feedback visual
@@ -750,30 +724,24 @@ function checkAnswer() {
     const question = state.selectedExercises[state.currentQuestion];
     let isCorrect = false;
     
-    // Marcar como respondida
     state.answeredQuestions.add(state.currentQuestion);
     checkBtn.disabled = true;
     
     if (state.difficulty === 'easy') {
-        // Verificar se as palavras selecionadas formam a frase correta
         const userPhrase = state.selectedWords.join(' ');
         isCorrect = userPhrase === question.french;
         
-        // Desativar todos os botões de palavras
         const wordBtns = document.querySelectorAll('.word-btn');
         wordBtns.forEach(btn => {
             btn.disabled = true;
         });
     } else {
-        // Verificar tradução (case-insensitive e aceita múltiplas respostas)
         const userAnswer = answerInput.value.trim().toLowerCase();
         const correctAnswers = question.correctAnswers.map(answer => 
             answer.toLowerCase().replace(/[.,]/g, '').trim()
         );
         
-        // Remove pontuação da resposta do usuário para comparação
         const cleanUserAnswer = userAnswer.replace(/[.,]/g, '').trim();
-        
         isCorrect = correctAnswers.some(correctAnswer => 
             cleanUserAnswer === correctAnswer
         );
@@ -781,14 +749,12 @@ function checkAnswer() {
         answerInput.disabled = true;
     }
     
-    // Atualizar pontuação apenas se não foi respondida antes
     if (!state.userAnswers[state.currentQuestion]) {
         if (isCorrect) {
             state.score++;
         }
     }
     
-    // Feedback sonoro
     if (isCorrect) {
         playSound('WIN.wav');
         resultStatus.textContent = 'CORRETO';
@@ -799,7 +765,6 @@ function checkAnswer() {
         resultStatus.className = 'incorrect';
     }
     
-    // Mostrar resposta correta com TODAS as traduções possíveis
     let correctAnswerHTML = '';
     if (state.difficulty === 'easy') {
         correctAnswerHTML = `Frase correta: ${question.french}<br><br>`;
@@ -812,7 +777,6 @@ function checkAnswer() {
     correctAnswer.innerHTML = correctAnswerHTML;
     feedback.classList.remove('hidden');
     
-    // Salvar resposta do usuário
     state.userAnswers[state.currentQuestion] = {
         question: question.french,
         userAnswer: state.difficulty === 'easy' ? state.selectedWords.join(' ') : answerInput.value,
@@ -820,13 +784,9 @@ function checkAnswer() {
         score: isCorrect ? 1 : 0
     };
     
-    // Habilitar botão avançar após verificar
     nextBtn.disabled = false;
-    
-    // Salvar progresso
     saveProgress();
     
-    // Debug: mostrar pontuação atual
     console.log(`Pontuação atual: ${state.score}/${state.currentQuestion + 1}`);
 }
 
@@ -858,7 +818,6 @@ function updateProgress() {
 function showResults() {
     showPage('results-page');
     
-    // Calcular pontuação final baseada nas respostas salvas
     let finalScore = 0;
     state.userAnswers.forEach(answer => {
         if (answer && answer.isCorrect) {
@@ -866,14 +825,11 @@ function showResults() {
         }
     });
     
-    // Garantir que a pontuação não exceda o número de questões
     finalScore = Math.min(finalScore, state.selectedExercises.length);
-    
     const percentage = (finalScore / state.selectedExercises.length) * 100;
     
     console.log(`Resultado final: ${finalScore}/${state.selectedExercises.length} (${percentage}%)`);
     
-    // Determinar resultado com base na porcentagem
     if (percentage >= 95) {
         mainMessage.textContent = "EXCELENTE";
         secondaryMessage.textContent = `Parabéns pelo seu desempenho excepcional! Você alcançou um resultado EXCELENTE, acertando ${finalScore} das ${state.selectedExercises.length} palavras no quiz de escrita em francês! Isso demonstra um domínio impressionante das expressões e da ortografia francesa. Continue assim, pois seu esforço e dedicação são inspiradores! Este resultado reflete não apenas sua habilidade linguística, mas também sua atenção aos detalhes e compromisso em aprender. Que tal continuar explorando o idioma com o mesmo entusiasmo? A prática constante vai te levar ainda mais longe.`;
